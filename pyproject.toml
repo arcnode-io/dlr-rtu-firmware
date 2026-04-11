@@ -1,0 +1,69 @@
+[project]
+name = "ems-line-controller-dlr"
+version = "1.0.0-beta"
+requires-python = ">=3.11"
+dependencies = [
+    "adafruit-blinka>=8.0.0",
+    "adafruit-circuitpython-dht>=3.7.0",
+    "pydantic>=2.0.0",
+    "pyyaml>=6.0.0",
+    "aiomqtt>=2.0.0",
+]
+
+[dependency-groups]
+dev = [
+    "bandit>=1.8.0",
+    "black[d]>=26.3.1",
+    "mypy>=1.14.0",
+    "poethepoet>=0.32.0",
+    "pytest>=8.3.4",
+    "ruff>=0.8.4",
+    "pip-audit>=2.6.1",
+    "pytest-cov>=6.0.0",
+    "deptry>=0.23.0",
+    "pip>=25.1.1",
+    "paramiko>=3.0.0",
+    "pytest-xdist>=3.8.0",
+    "filelock>=3.0.0",
+    "testcontainers>=4.0.0",
+]
+
+[tool.coverage.run]
+source = ["src"]
+omit = [
+    "tests/*",
+    "**/__init__.py",
+]
+
+[tool.coverage.report]
+exclude_also = [
+    # Don't complain about abstract methods that aren't implemented
+    "@(abc\\.)?abstractmethod",
+    # Don't complain about type checking blocks
+    "if TYPE_CHECKING:",
+    # Don't complain about ellipsis in protocols
+    "\\.\\.\\.",
+]
+# Show which lines are missing coverage
+show_missing = true
+# Skip files with 100% coverage
+skip_covered = false
+
+[tool.poe.tasks]
+depcheck = "deptry ."
+format = "black ."
+lint = "ruff check"
+typecheck = "mypy  --install-types --non-interactive  --explicit-package-bases ."
+audit-src = "bandit -r src/* -s B101"
+audit-packages = "pip-audit --ignore-vuln GHSA-4xh5-x5gv-qwph"
+security = ["audit-src", "audit-packages"]
+checks = ["depcheck", "format", "lint", "typecheck", "security"]
+unit = "pytest -vv src/*"
+# Reason: absolute paths work around pytest-xdist #971 (relative path resolution bug)
+integration = "bash -c 'pytest -d --tx ssh=${PI_HOST:-pi@raspberrypi.local}//python=${PI_PYTHON:-/home/pi/python-circuitpython/.venv/bin/python} --rsyncdir $(realpath src) --rsyncdir $(realpath tests) $(realpath tests/test_integration.py) -p no:warnings'"
+hardware-in-loop = "pytest -vv tests/test_hil.py"
+healthcheck = "bash -c 'ssh -o ConnectTimeout=10 -o BatchMode=yes ${PI_HOST:-pi@raspberrypi.local} echo NETWORK_READY'"
+test = ["unit", "healthcheck", "integration", "hardware-in-loop"]
+cover = "pytest -vv --cov --cov-branch --cov-report=term-missing src/"
+review = "claude 'run code-reviewer agent against diff for simplicity and elegance'"
+commit = "bash -c 'uv run poe checks && uv run poe test && uv run poe review && git add -A && git cz && git push'"
