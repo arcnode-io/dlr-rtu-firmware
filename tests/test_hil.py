@@ -44,7 +44,7 @@ def test_hil_mqtt_integration() -> None:
     # Get Pi connection details from environment
     pi_host = os.environ.get("PI_HOST", "pi@raspberrypi.local")
     pi_python = os.environ.get(
-        "PI_PYTHON", "/home/pi/ems-line-controller-dlr/.venv/bin/python"
+        "PI_PYTHON", "/home/pi/python-circuitpython/.venv/bin/python"
     )
     if "@" in pi_host:
         pi_user, pi_hostname = pi_host.split("@")
