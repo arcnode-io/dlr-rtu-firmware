@@ -60,7 +60,7 @@ security = ["audit-src", "audit-packages"]
 checks = ["depcheck", "format", "lint", "typecheck", "security"]
 unit = "pytest -vv src/*"
 # Reason: absolute paths work around pytest-xdist #971 (relative path resolution bug)
-integration = "bash -c 'pytest -d --tx ssh=${PI_HOST:-pi@raspberrypi.local}//python=${PI_PYTHON:-/home/pi/python-circuitpython/.venv/bin/python} --rsyncdir $(realpath src) --rsyncdir $(realpath tests) $(realpath tests/test_integration.py) -p no:warnings'"
+integration = "bash -c 'pytest -d --tx ssh=${PI_HOST:-pi@raspberrypi.local}//python=${PI_PYTHON:-/home/pi/ems-line-controller-dlr/.venv/bin/python} --rsyncdir $(realpath src) --rsyncdir $(realpath tests) $(realpath tests/test_integration.py) -p no:warnings'"
 hardware-in-loop = "pytest -vv tests/test_hil.py"
 healthcheck = "bash -c 'ssh -o ConnectTimeout=10 -o BatchMode=yes ${PI_HOST:-pi@raspberrypi.local} echo NETWORK_READY'"
 test = ["unit", "healthcheck", "integration", "hardware-in-loop"]

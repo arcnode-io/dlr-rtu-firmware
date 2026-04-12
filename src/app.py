@@ -1,4 +1,4 @@
-"""Application library for python-circuitpython template.
+"""Application library for ems-line-controller-dlr.
 
 This library provides temperature monitoring and MQTT publishing.
 """
