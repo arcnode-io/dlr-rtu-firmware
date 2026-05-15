@@ -56,16 +56,16 @@ def _start_container(
 
 @contextmanager
 def start_mqtt_broker() -> Generator[Container]:
-    """Start an EMQX MQTT broker with dynamic port.
+    """Start an HiveMQ MQTT broker with dynamic port.
 
     Yields:
         Container with mqtt:// URL and dynamic port
     """
     c = (
-        DockerContainer("emqx/emqx:latest")
+        DockerContainer("hivemq/hivemq-ce:latest")
         .with_exposed_ports(1883)
         .waiting_for(
-            LogMessageWaitStrategy("Listener tcp:default on 0.0.0.0:1883 started.")
+            LogMessageWaitStrategy("Started TCP Listener on address 0.0.0.0 and on port 1883.")
         )
     )
 
