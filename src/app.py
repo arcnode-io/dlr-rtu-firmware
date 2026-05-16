@@ -1,4 +1,4 @@
-"""Application library for dlr-utility-envelope.
+"""Application library for dlr-operating-envelope.
 
 This library provides temperature monitoring and MQTT publishing.
 """

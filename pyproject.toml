@@ -1,5 +1,5 @@
 [project]
-name = "dlr-utility-envelope"
+name = "dlr-operating-envelope"
 version = "1.0.0-beta"
 requires-python = ">=3.11"
 dependencies = [

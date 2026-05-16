@@ -1,5 +1,5 @@
 """
-Build configuration for dlr-utility-envelope.
+Build configuration for dlr-operating-envelope.
 
 Loads configuration from cfg.yml based on ENV environment variable and
 allows MQTT_PORT override from environment for dynamic test container ports.
@@ -24,7 +24,7 @@ class LogLevel(enum.StrEnum):
 
 
 class Config(BaseModel):
-    """Configuration for dlr-utility-envelope application."""
+    """Configuration for dlr-operating-envelope application."""
 
     log_level: LogLevel
     mqtt_host: str

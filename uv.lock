@@ -830,7 +830,7 @@ wheels = [
 ]
 
 [[package]]
-name = "dlr-utility-envelope"
+name = "dlr-operating-envelope"
 version = "1.0.0b0"
 source = { virtual = "." }
 dependencies = [
