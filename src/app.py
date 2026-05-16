@@ -1,4 +1,4 @@
-"""Application library for ems-line-controller-dlr.
+"""Application library for dlr-utility-envelope.
 
 This library provides temperature monitoring and MQTT publishing.
 """

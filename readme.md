@@ -1,7 +1,7 @@
-# EMS Line Controller DLR 🌡️📈
+# DLR Utility Envelope 🌡️📈
 
-![](https://img.shields.io/gitlab/pipeline-status/arcnode-io/ems-line-controller-dlr?branch=main&logo=gitlab)
-![](https://gitlab.com/arcnode-io/ems-line-controller-dlr/badges/main/coverage.svg)
+![](https://img.shields.io/gitlab/pipeline-status/arcnode-io/dlr-utility-envelope?branch=main&logo=gitlab)
+![](https://gitlab.com/arcnode-io/dlr-utility-envelope/badges/main/coverage.svg)
 ![](https://img.shields.io/badge/ty_checked-gray?logo=astral)
 ![](https://img.shields.io/badge/3.13-gray?logo=python)
 ![](https://img.shields.io/badge/uv-gray?logo=uv)

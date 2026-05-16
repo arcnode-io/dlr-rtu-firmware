@@ -1,5 +1,5 @@
 [project]
-name = "ems-line-controller-dlr"
+name = "dlr-utility-envelope"
 version = "1.0.0-beta"
 requires-python = ">=3.11"
 dependencies = [

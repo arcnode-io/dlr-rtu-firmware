@@ -1,5 +1,5 @@
 """
-Build configuration for ems-line-controller-dlr.
+Build configuration for dlr-utility-envelope.
 
 Loads configuration from cfg.yml based on ENV environment variable and
 allows MQTT_PORT override from environment for dynamic test container ports.
@@ -24,7 +24,7 @@ class LogLevel(enum.StrEnum):
 
 
 class Config(BaseModel):
-    """Configuration for ems-line-controller-dlr application."""
+    """Configuration for dlr-utility-envelope application."""
 
     log_level: LogLevel
     mqtt_host: str
