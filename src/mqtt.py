@@ -8,8 +8,8 @@ import aiomqtt
 
 from build import CONFIG
 
-# MQTT topic for publishing temperature readings
-MQTT_TOPIC: Final[str] = "test/temp/F"
+# MQTT topic for publishing IEEE 738 dynamic line rating (amps).
+MQTT_TOPIC: Final[str] = "test/line_rating/A"
 
 
 async def get_mqtt_client() -> aiomqtt.Client:

@@ -81,7 +81,10 @@ async def run() -> None:
                 )
                 outstation.publish_status(oe_status=STATUS_OK, lr_status=STATUS_OK)
 
-                await mqtt_client.publish(MQTT_TOPIC, payload=line_rating_a)
+                # QoS 1 -- broker ACKs before publish() returns, so RUN_ONCE
+                # mode's immediate disconnect can't race the delivery to
+                # the subscriber.
+                await mqtt_client.publish(MQTT_TOPIC, payload=line_rating_a, qos=1)
                 _log.debug(
                     "tick: line_rating=%.1fA limit=%.0fW", line_rating_a, limit_w
                 )

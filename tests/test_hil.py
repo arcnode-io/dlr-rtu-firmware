@@ -1,11 +1,11 @@
 """
-Hardware-in-Loop test for MQTT integration.
+Hardware-in-Loop test for full DLR stack.
 
-Tests full MQTT flow by:
-- Starting MQTT broker in testcontainer
-- Deploying code to Raspberry Pi via SSH
-- Running application on Pi with dynamic MQTT port from testcontainer
-- Verifying temperature message received on MQTT topic
+Tests the full Pi-deployed pipeline by:
+- Starting an MQTT broker in a testcontainer with a dynamic port
+- Deploying code to a Raspberry Pi via SSH
+- Running the app on the Pi with the dynamic MQTT host+port plumbed in
+- Verifying a line-rating message arrives on the MQTT topic
 """
 
 import os
@@ -19,8 +19,8 @@ import paho.mqtt.client as mqtt_client
 
 from tests.fixtures.containers import start_mqtt_broker
 
-# Topic where temperature readings are published
-MQTT_TOPIC = "test/temp/F"
+# Topic where IEEE 738 line-rating readings are published.
+MQTT_TOPIC = "test/line_rating/A"
 
 # Maximum time to wait for subscription confirmation (seconds)
 SUBSCRIBE_TIMEOUT = 10
@@ -201,18 +201,19 @@ def test_hil_mqtt_integration() -> None:
 
         log(f"Messages received: {len(received_messages)}")
 
-        # Assert - Temperature message received
+        # Assert - line-rating message received
         assert len(received_messages) >= 1, "No MQTT message received"
 
-        # Assert - Validate temperature is in reasonable range (50-104°F)
-        temp_str = received_messages[0]
-        temp_f = float(temp_str)
-
+        # Assert - value is a positive float (IEEE 738 ampacity, amps).
+        # Loose bound: ~10 A floor catches dead/zero output; 5000 A ceiling
+        # catches obviously-wrong scaling. The sim sensors at first-tick state
+        # land somewhere in the low-hundreds for DRAKE_ACSR_795 conductor.
+        line_rating_a = float(received_messages[0])
         assert (
-            50.0 <= temp_f <= 104.0
-        ), f"Temperature {temp_f}°F is outside reasonable range"
+            10.0 <= line_rating_a <= 5000.0
+        ), f"line rating {line_rating_a}A outside plausible range"
 
-        log(f"Test passed! Received valid temperature: {temp_f}°F")
+        log(f"Test passed! Received valid line rating: {line_rating_a}A")
 
         # Cleanup
         subscriber.loop_stop()
