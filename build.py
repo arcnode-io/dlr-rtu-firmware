@@ -14,8 +14,12 @@ import yaml
 from pydantic import BaseModel
 
 
-class LogLevel(enum.StrEnum):
-    """Logging levels for the application."""
+class LogLevel(str, enum.Enum):
+    """Logging levels for the application.
+
+    Reason: `str, Enum` instead of `StrEnum` because this repo targets
+    Python 3.10 (dnp3-python wheel constraint); StrEnum landed in 3.11.
+    """
 
     ERROR = "ERROR"
     WARN = "WARN"
