@@ -78,6 +78,7 @@ unit = "pytest -vv src/*"
 # Reason: absolute paths work around pytest-xdist #971 (relative path resolution bug)
 integration = "bash -c 'pytest -d --tx ssh=${PI_HOST:-pi@raspberrypi.local}//python=${PI_PYTHON:-/home/pi/python-circuitpython/.venv/bin/python} --rsyncdir $(realpath src) --rsyncdir $(realpath tests) $(realpath tests/test_integration.py) -p no:warnings'"
 hardware-in-loop = "pytest -vv tests/test_hil.py"
+e2e = "pytest -vv -p no:xdist tests/test_dnp3_e2e.py"
 healthcheck = "bash -c 'ssh -o ConnectTimeout=10 -o BatchMode=yes ${PI_HOST:-pi@raspberrypi.local} echo NETWORK_READY'"
 test = ["unit", "healthcheck", "integration", "hardware-in-loop"]
 cover = "pytest -vv --cov --cov-branch --cov-report=term-missing src/"

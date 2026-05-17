@@ -59,12 +59,18 @@ class Dnp3Outstation:
             master_addr: DNP3 link-layer address of the master (gateway side).
             outstation_addr: DNP3 link-layer address of THIS outstation.
         """
+        # Reason: opendnp3.DatabaseSizes requires all 8 point counts; passing
+        # None for the unused ones blows up at session-open. Provide explicit
+        # zeros for binary + analog output status; analog gets our reservation.
         self._app = OutStationApplication(
             outstation_ip=outstation_ip,
             port=port,
             master_id=master_addr,
             outstation_id=outstation_addr,
+            numBinary=0,
+            numBinaryOutputStatus=0,
             numAnalog=NUM_ANALOG_POINTS,
+            numAnalogOutputStatus=0,
         )
 
     def start(self) -> None:

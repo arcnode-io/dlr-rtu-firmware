@@ -49,7 +49,10 @@ def test_constructor_passes_addresses_to_outstation_application(
         port=20001,
         master_id=3,
         outstation_id=7,
+        numBinary=0,
+        numBinaryOutputStatus=0,
         numAnalog=NUM_ANALOG_POINTS,
+        numAnalogOutputStatus=0,
     )
 
 
