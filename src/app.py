@@ -1,37 +1,67 @@
-"""Application library for dlr-operating-envelope.
+"""Application loop for dlr-operating-envelope.
 
-This library provides temperature monitoring, MQTT publishing, and a DNP3
-outstation that ems-industrial-gateway polls for DOE + line-rating values.
+Each tick:
+1. Read all five sensors (DHT, conductor temp, solar, rain, anemometer).
+2. Compute IEEE 738 steady-state line ampacity from the readings.
+3. Derive the import/export operating envelope from the ampacity.
+4. Publish line rating + envelope + status via the DNP3 outstation.
+5. Publish a heartbeat to MQTT.
+
+The mode env (local | ci | demo) decides which driver each sensor uses.
 """
 
 import asyncio
+import logging
 import os
 from typing import Final
 
 from build import CONFIG
-from src.dnp3_outstation import Dnp3Outstation
+from src.dnp3_outstation import STATUS_OK, Dnp3Outstation
+from src.doe import derive_envelope
+from src.ieee738 import DRAKE_ACSR_795, steady_state_current
 from src.mqtt import MQTT_TOPIC, get_mqtt_client
-from src.temperature.temperature_client import TemperatureClient
+from src.sensor_suite import SensorSuite, build_sensor_suite
 
-# System loop rate in seconds.
+# Tick rate seconds. DOE/line-rating physics is slow; 2s is plenty.
 SYSTEM_RATE: Final[int] = 2
 
-# Application mode - development runs one iteration, beta runs infinite loop.
-MODE: Final[str] = os.getenv("MODE", "beta")
+# "development" -> single tick (used by tests so the loop doesn't hang).
+RUN_ONCE: Final[bool] = os.getenv("MODE") == "development"
+
+_log = logging.getLogger(__name__)
+
+
+def compute_tick(suite: SensorSuite) -> tuple[float, float]:
+    """Read sensors, compute IEEE 738 ampacity + DOE limit.
+
+    Returns:
+        (line_rating_a, import_export_limit_w) -- symmetric envelope today.
+    """
+    dht = suite.dht.read()
+    conductor_temp_c = suite.conductor_temp.read()
+    solar_w_per_m2 = suite.solar.read()
+    wind = suite.wind.read()
+    # Rain isn't in IEEE 738; read for situational awareness only (future MQTT).
+    _rain = suite.rain.read()
+
+    line_rating_a = steady_state_current(
+        conductor=DRAKE_ACSR_795,
+        conductor_temp_c=conductor_temp_c,
+        ambient_temp_c=dht.temperature_c,
+        wind_speed_mps=wind.speed_mps,
+        solar_irradiance_w_per_m2=solar_w_per_m2,
+        wind_angle_deg=wind.direction_deg,
+    )
+    envelope = derive_envelope(
+        line_rating_a=line_rating_a,
+        v_line_to_line_kv=CONFIG.line_voltage_kv,
+    )
+    return line_rating_a, envelope.import_limit_w
 
 
 async def run() -> None:
-    """
-    Run the main application loop.
-
-    Main application function that reads temperature, publishes to MQTT, and
-    serves the DNP3 outstation. Initializes clients, starts the outstation,
-    runs the read/publish loop, and shuts down the outstation cleanly on exit.
-
-    Returns:
-        None on successful initialization and first read (used for testing)
-    """
-    temp_client = TemperatureClient()
+    """Main loop: sensors -> IEEE 738 -> DOE -> outstation + MQTT."""
+    suite = build_sensor_suite(CONFIG.mode)
     outstation = Dnp3Outstation(
         outstation_ip=CONFIG.dnp3_outstation_ip,
         port=CONFIG.dnp3_outstation_port,
@@ -42,19 +72,22 @@ async def run() -> None:
     try:
         async with await get_mqtt_client() as mqtt_client:
             while True:
-                temp_f = temp_client.read_fahrenheit()
+                line_rating_a, limit_w = compute_tick(suite)
 
-                # Publish temperature to MQTT
-                await mqtt_client.publish(MQTT_TOPIC, payload=temp_f)
+                outstation.publish_line_rating(dynamic_amps=line_rating_a)
+                outstation.publish_envelope(
+                    import_limit_w=limit_w,
+                    export_limit_w=limit_w,
+                )
+                outstation.publish_status(oe_status=STATUS_OK, lr_status=STATUS_OK)
 
-                # Heartbeat the outstation status as healthy — IEEE 738 +
-                # DOE-derivation code (separate task) overwrites with real
-                # values via outstation.publish_envelope / publish_line_rating.
-                outstation.publish_status(oe_status=0, lr_status=0)
+                await mqtt_client.publish(MQTT_TOPIC, payload=line_rating_a)
+                _log.debug(
+                    "tick: line_rating=%.1fA limit=%.0fW", line_rating_a, limit_w
+                )
 
-                if MODE == "development":
+                if RUN_ONCE:
                     return
-
                 await asyncio.sleep(SYSTEM_RATE)
     finally:
         outstation.shutdown()

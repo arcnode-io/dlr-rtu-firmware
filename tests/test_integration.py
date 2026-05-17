@@ -1,27 +1,23 @@
-"""Integration tests. Validates sensor hardware. Uses pytest-xdist to run on device."""
+"""HIL integration test. Validates real DHT22 hardware via DhtReal.
 
-from src.temperature.temperature_client import TemperatureClient
+Runs on the Pi (which has GPIO + adafruit_dht). Other CI runners skip it
+because adafruit_dht imports fail without board.D4 etc.
+"""
+
+import pytest
+
+from src.sensors.dht import DhtReading
 
 
-def test_temperature_sensor() -> None:
-    """
-    Test temperature sensor reads valid Fahrenheit values.
+def test_dht_real_reads_plausible_ambient() -> None:
+    """Real DHT22 returns a reading in plausible indoor range."""
+    pytest.importorskip("adafruit_dht")
+    pytest.importorskip("board")
+    from src.sensors.dht import DhtReal
 
-    Validates temperature sensor can communicate and return reasonable readings.
-    Checks that readings are within expected range and consistent across multiple reads.
-    """
-    # Arrange - Initialize real hardware client
-    client = TemperatureClient()
+    sensor = DhtReal()
+    reading: DhtReading = sensor.read()
 
-    # Act - Read temperature
-    fahrenheit = client.read_fahrenheit()
-
-    # Assert - Temperature is in reasonable range (50-104°F)
-    assert 50.0 <= fahrenheit <= 104.0
-
-    # Act - Read again for consistency check
-    fahrenheit2 = client.read_fahrenheit()
-
-    # Assert - Readings are consistent (within 9°F tolerance)
-    diff = abs(fahrenheit - fahrenheit2)
-    assert diff < 9.0
+    # plausible indoor air: 10..40 C, 10..90% RH
+    assert 10.0 <= reading.temperature_c <= 40.0
+    assert 10.0 <= reading.humidity_percent <= 90.0

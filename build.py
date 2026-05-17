@@ -27,12 +27,27 @@ class LogLevel(str, enum.Enum):
     DEBUG = "DEBUG"
 
 
+class Mode(str, enum.Enum):
+    """Top-level deployment mode — picks sensor drivers + endpoint config.
+
+    local: dev machine, all sensors sim, no DNP3 master expected.
+    ci:    CI runner, all sensors sim, integration tests target localhost.
+    demo:  Pi-deployed, DHT22 real (GPIO), other sensors sim until real
+           drivers land. DNP3 outstation bound to LAN.
+    """
+
+    LOCAL = "local"
+    CI = "ci"
+    DEMO = "demo"
+
+
 class Config(BaseModel):
     """Configuration for dlr-operating-envelope application."""
 
     log_level: LogLevel
     mqtt_host: str
     wifi_ssid: str
+    mode: Mode = Mode.LOCAL
     # DNP3 outstation: where to listen + which DNP3 link-layer addresses to use.
     # Master is `ems-industrial-gateway` (configured separately on the gateway side).
     # Bind to all interfaces by default — the gateway connects across the LAN.
@@ -40,6 +55,10 @@ class Config(BaseModel):
     dnp3_outstation_port: int = 20000
     dnp3_master_addr: int = 2
     dnp3_outstation_addr: int = 1
+    # POI line-to-line voltage (kV) used by DOE derivation to convert IEEE 738
+    # ampacity into a watts-based envelope. 138 kV = typical sub-transmission
+    # tie; override per-deployment when the real POI voltage differs.
+    line_voltage_kv: float = 138.0
 
 
 class _ConfigMap(BaseModel):
@@ -47,6 +66,7 @@ class _ConfigMap(BaseModel):
 
     local: Config
     ci: Config
+    demo: Config
 
 
 def load_config() -> Config:
@@ -88,6 +108,8 @@ def load_config() -> Config:
     match environment:
         case "ci":
             config = config_map.ci
+        case "demo":
+            config = config_map.demo
         case _:
             config = config_map.local
 
