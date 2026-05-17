@@ -1,13 +1,18 @@
 [project]
 name = "dlr-operating-envelope"
 version = "1.0.0-beta"
-requires-python = ">=3.11"
+# Reason: dnp3-python 0.3.0b2 ships prebuilt wheels for cp38/cp39/cp310 only;
+# newer Pythons fail at source build (opendnp3 CMake < 3.5 removed in CMake 3.10+).
+# Other arcnode Python repos run 3.13; this repo deviates due to the native
+# binding constraint. See ems handoff §A and dnp3-python pypi page.
+requires-python = ">=3.10,<3.11"
 dependencies = [
     "adafruit-blinka>=8.0.0",
     "adafruit-circuitpython-dht>=3.7.0",
     "pydantic>=2.0.0",
     "pyyaml>=6.0.0",
     "aiomqtt>=2.0.0",
+    "dnp3-python>=0.3.0b2",
 ]
 
 [dependency-groups]
@@ -28,6 +33,16 @@ dev = [
     "ty>=0.0.18",
     "types-paramiko>=4.0",
 ]
+
+[tool.deptry.per_rule_ignores]
+# Reason: pytest is a dev-only import allowed in colocated `*_test.py` files under src/.
+DEP004 = ["pytest"]
+
+[tool.deptry.package_module_name_map]
+# Package-name → import-name overrides where they differ.
+pyyaml = "yaml"
+"adafruit-circuitpython-dht" = "adafruit_dht"
+"adafruit-blinka" = "board"
 
 [tool.coverage.run]
 source = ["src"]
@@ -55,7 +70,7 @@ depcheck = "deptry ."
 format = "black ."
 lint = "ruff check"
 typecheck = "ty check"
-audit-src = "bandit -r src/* -s B101"
+audit-src = "bandit -r src/* -s B101,B104"
 audit-packages = "pip-audit --ignore-vuln GHSA-4xh5-x5gv-qwph --ignore-vuln CVE-2026-3219"
 security = ["audit-src", "audit-packages"]
 checks = ["depcheck", "format", "lint", "typecheck", "security"]

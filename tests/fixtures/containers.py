@@ -65,7 +65,9 @@ def start_mqtt_broker() -> Generator[Container]:
         DockerContainer("hivemq/hivemq-ce:latest")
         .with_exposed_ports(1883)
         .waiting_for(
-            LogMessageWaitStrategy("Started TCP Listener on address 0.0.0.0 and on port 1883.")
+            LogMessageWaitStrategy(
+                "Started TCP Listener on address 0.0.0.0 and on port 1883."
+            )
         )
     )
 

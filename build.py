@@ -29,6 +29,13 @@ class Config(BaseModel):
     log_level: LogLevel
     mqtt_host: str
     wifi_ssid: str
+    # DNP3 outstation: where to listen + which DNP3 link-layer addresses to use.
+    # Master is `ems-industrial-gateway` (configured separately on the gateway side).
+    # Bind to all interfaces by default — the gateway connects across the LAN.
+    dnp3_outstation_ip: str = "0.0.0.0"  # noqa: S104
+    dnp3_outstation_port: int = 20000
+    dnp3_master_addr: int = 2
+    dnp3_outstation_addr: int = 1
 
 
 class _ConfigMap(BaseModel):
