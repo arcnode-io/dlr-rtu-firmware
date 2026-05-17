@@ -22,11 +22,13 @@
 | DHT22 | GPIO | Ambient temp/humidity | Digital |
 | SI1145 | I2C | Solar radiation | UV/Visible/IR |
 | YL-83 | ADC | Rain detection | Analog |
-| Ultrasonic anemometer | RS-485 (Modbus RTU) | Wind speed + direction | Digital |
+| Calypso ULP STD ultrasonic | I2C | Wind speed + direction | Digital |
 
-Anemometer required for IEEE 738 compliance — convective cooling from wind is the dominant heat-dissipation mechanism for overhead conductors. Ultrasonic type (Gill Instruments, Lufft, RM Young) is preferred over cup-style: zero stall speed, no inertia, accurate at the low wind speeds where DLR matters most.
+Anemometer required for IEEE 738 compliance — convective cooling from wind is the dominant heat-dissipation mechanism for overhead conductors. Ultrasonic preferred over cup-style: zero stall speed, no inertia, accurate at the low wind speeds where DLR matters most.
 
-**PCB integration:** the current `dlr-pcb` carrier has SPI / GPIO / I2C / ADS1115-analog but no RS-485 transceiver. Adding the anemometer requires a MAX485 IC + 2 differential pins (A/B) on the carrier rev. Alternative: 0–5V analog wind-speed output through the existing ADS1115 (lower fidelity, no direction).
+**Component choice:** Calypso Instruments **ULP STD Ultrasonic Wind Meter** — 0.12 W average draw fits the solar/LiFePO4 budget, runs over the **existing I2C bus** (no new transceiver IC needed on the carrier — same bus as the SI1145), gives speed + direction in one telegram. Marine-origin IP-rated enclosure for outdoor mast mount.
+
+**Cheaper fallback:** Modern Devices Wind Sensor Rev. P (MEMS hot-wire, analog 0–3.3V) — reuses an ADS1115 channel; no direction.
 
 ## Core Algorithm
 
