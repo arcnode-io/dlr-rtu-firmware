@@ -36,6 +36,72 @@ Where:
 - YL-83 cooling coefficient: $ΔT_{rain}$
 - FLIR Lepton thermal resistance: $R_{thermal} = \frac{(T_{conductor} - T_{ambient})}{P_{current}}$
 
+## Context Deployment
+
+```plantuml
+rectangle dlr_operating_envelope
+
+cloud sensors
+queue mqtt_broker
+rectangle dlr_pst_sim
+rectangle industrial_gateway
+
+dlr_operating_envelope -- sensors
+dlr_operating_envelope -- mqtt_broker: mqtt
+mqtt_broker -- dlr_pst_sim
+dlr_operating_envelope -- industrial_gateway: dnp3
+```
+
+## Context Sequence
+
+```plantuml
+participant sensors
+participant dlr_operating_envelope
+participant dlr_pst_sim
+participant industrial_gateway
+
+sensors -> dlr_operating_envelope: environmental readings
+dlr_operating_envelope -> dlr_pst_sim: mqtt measurements
+industrial_gateway -> dlr_operating_envelope: poll dnp3 points
+```
+
+## Deployment
+
+```plantuml
+rectangle dlr_operating_envelope #line.dashed {
+  rectangle thermal_camera
+  rectangle temp_humidity_sensor
+  rectangle uv_light_sensor
+  rectangle rain_sensor
+  rectangle ieee738_calc
+  rectangle mqtt_publisher
+  rectangle dnp3_outstation
+}
+
+queue mqtt_broker
+rectangle industrial_gateway
+
+dlr_operating_envelope -- mqtt_broker: mqtt
+dlr_operating_envelope -- industrial_gateway: dnp3
+```
+
+## Sequence
+
+```plantuml
+participant sensors
+participant ieee738
+participant mqtt_publisher
+participant dnp3_outstation
+queue mqtt_broker
+participant industrial_gateway
+
+sensors -> ieee738: temp + humidity + solar + rain
+ieee738 -> mqtt_publisher: derived values
+ieee738 -> dnp3_outstation: update analog input points
+mqtt_publisher -> mqtt_broker: publish measurements
+industrial_gateway -> dnp3_outstation: poll Group 30 + Group 1
+```
+
 ## MQTT Topics Published
 
 Per [ems/topic_structure_adr.md](../ems/topic_structure_adr.md). Payload is `FloatSample {ts, value}` unless noted.
