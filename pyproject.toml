@@ -11,9 +11,6 @@ dependencies = [
     "dnp3-outstation>=0.1.0",
 ]
 
-[tool.uv.sources]
-dnp3-outstation = { git = "https://gitlab.com/joenarvaez/dnp3-outstation.git", branch = "main" }
-
 [dependency-groups]
 dev = [
     "bandit>=1.8.0",

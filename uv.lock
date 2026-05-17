@@ -867,7 +867,7 @@ requires-dist = [
     { name = "adafruit-blinka", specifier = ">=8.0.0" },
     { name = "adafruit-circuitpython-dht", specifier = ">=3.7.0" },
     { name = "aiomqtt", specifier = ">=2.0.0" },
-    { name = "dnp3-outstation", git = "https://gitlab.com/joenarvaez/dnp3-outstation.git?branch=main" },
+    { name = "dnp3-outstation", specifier = ">=0.1.0" },
     { name = "pydantic", specifier = ">=2.0.0" },
     { name = "pyyaml", specifier = ">=6.0.0" },
 ]
@@ -895,7 +895,11 @@ dev = [
 [[package]]
 name = "dnp3-outstation"
 version = "0.1.0"
-source = { git = "https://gitlab.com/joenarvaez/dnp3-outstation.git?branch=main#c08a6fa5aa5ea538bb5a5dfa29c3d7e77019accf" }
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/49/42/3f1aab7f770c3adea23b32346781470bbc8212ad48aa53322b43fdf9e166/dnp3_outstation-0.1.0.tar.gz", hash = "sha256:18b5168ed8ed9bab0993a527e94b130c8357f2c3d34cc139f6b10081faf9adce", size = 14785, upload-time = "2026-05-17T18:47:47.247Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e6/c4/64defd6b1398c9b227d278e1401f4a31fccfa78b9f21e127cfb23ee7fbdf/dnp3_outstation-0.1.0-py3-none-any.whl", hash = "sha256:526733361e778c58630ef160f467457e9226644f5535895a348bb4dca487d49b", size = 20764, upload-time = "2026-05-17T18:47:48.937Z" },
+]
 
 [[package]]
 name = "docker"

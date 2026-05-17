@@ -5,8 +5,8 @@ local:
   mode: local
   dnp3_outstation_ip: "0.0.0.0"
   dnp3_outstation_port: 20000
-  dnp3_master_addr: 2
-  dnp3_outstation_addr: 1
+  dnp3_master_addr: 1
+  dnp3_outstation_addr: 1024
   line_voltage_kv: 138.0
 
 ci:
@@ -16,8 +16,8 @@ ci:
   mode: ci
   dnp3_outstation_ip: "0.0.0.0"
   dnp3_outstation_port: 20000
-  dnp3_master_addr: 2
-  dnp3_outstation_addr: 1
+  dnp3_master_addr: 1
+  dnp3_outstation_addr: 1024
   line_voltage_kv: 138.0
 
 demo:
@@ -27,6 +27,6 @@ demo:
   mode: demo
   dnp3_outstation_ip: "0.0.0.0"
   dnp3_outstation_port: 20000
-  dnp3_master_addr: 2
-  dnp3_outstation_addr: 1
+  dnp3_master_addr: 1
+  dnp3_outstation_addr: 1024
   line_voltage_kv: 138.0
