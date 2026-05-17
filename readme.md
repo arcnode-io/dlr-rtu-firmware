@@ -22,9 +22,11 @@
 | DHT22 | GPIO | Ambient temp/humidity | Digital |
 | SI1145 | I2C | Solar radiation | UV/Visible/IR |
 | YL-83 | ADC | Rain detection | Analog |
-| Ultrasonic anemometer | RS-485 / Modbus | Wind speed (and direction) | Digital |
+| Ultrasonic anemometer | RS-485 (Modbus RTU) | Wind speed + direction | Digital |
 
-Anemometer required for IEEE 738 compliance — convective cooling from wind is the dominant heat-dissipation mechanism for overhead conductors. Ultrasonic type (Gill Instruments, Lufft) is preferred over cup-style: zero stall speed, no inertia, accurate at the low wind speeds where DLR matters most.
+Anemometer required for IEEE 738 compliance — convective cooling from wind is the dominant heat-dissipation mechanism for overhead conductors. Ultrasonic type (Gill Instruments, Lufft, RM Young) is preferred over cup-style: zero stall speed, no inertia, accurate at the low wind speeds where DLR matters most.
+
+**PCB integration:** the current `dlr-pcb` carrier has SPI / GPIO / I2C / ADS1115-analog but no RS-485 transceiver. Adding the anemometer requires a MAX485 IC + 2 differential pins (A/B) on the carrier rev. Alternative: 0–5V analog wind-speed output through the existing ADS1115 (lower fidelity, no direction).
 
 ## Core Algorithm
 
