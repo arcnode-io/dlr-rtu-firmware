@@ -68,7 +68,7 @@ async def run() -> None:
         master_addr=CONFIG.dnp3_master_addr,
         outstation_addr=CONFIG.dnp3_outstation_addr,
     )
-    outstation.start()
+    await outstation.start()
     try:
         async with await get_mqtt_client() as mqtt_client:
             while True:
@@ -90,4 +90,4 @@ async def run() -> None:
                     return
                 await asyncio.sleep(SYSTEM_RATE)
     finally:
-        outstation.shutdown()
+        await outstation.shutdown()

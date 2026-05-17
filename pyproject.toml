@@ -1,19 +1,18 @@
 [project]
 name = "dlr-operating-envelope"
 version = "1.0.0-beta"
-# Reason: dnp3-python 0.3.0b2 ships prebuilt wheels for cp38/cp39/cp310 only;
-# newer Pythons fail at source build (opendnp3 CMake < 3.5 removed in CMake 3.10+).
-# Other arcnode Python repos run 3.13; this repo deviates due to the native
-# binding constraint. See ems handoff §A and dnp3-python pypi page.
-requires-python = ">=3.10,<3.11"
+requires-python = ">=3.11"
 dependencies = [
     "adafruit-blinka>=8.0.0",
     "adafruit-circuitpython-dht>=3.7.0",
     "pydantic>=2.0.0",
     "pyyaml>=6.0.0",
     "aiomqtt>=2.0.0",
-    "dnp3-python>=0.3.0b2",
+    "dnp3-outstation>=0.1.0",
 ]
+
+[tool.uv.sources]
+dnp3-outstation = { git = "https://gitlab.com/joenarvaez/dnp3-outstation.git", branch = "main" }
 
 [dependency-groups]
 dev = [
@@ -26,6 +25,7 @@ dev = [
     "pip-audit>=2.6.1",
     "poethepoet>=0.32.0",
     "pytest>=8.3.4",
+    "pytest-asyncio>=0.25.0",
     "pytest-cov>=6.0.0",
     "pytest-xdist>=3.8.0",
     "ruff>=0.8.4",
@@ -43,6 +43,7 @@ DEP004 = ["pytest"]
 pyyaml = "yaml"
 "adafruit-circuitpython-dht" = "adafruit_dht"
 "adafruit-blinka" = "board"
+"dnp3-outstation" = "dnp3_outstation"
 
 [tool.coverage.run]
 source = ["src"]
@@ -78,7 +79,6 @@ unit = "pytest -vv src/*"
 # Reason: absolute paths work around pytest-xdist #971 (relative path resolution bug)
 integration = "bash -c 'pytest -d --tx ssh=${PI_HOST:-pi@raspberrypi.local}//python=${PI_PYTHON:-/home/pi/python-circuitpython/.venv/bin/python} --rsyncdir $(realpath src) --rsyncdir $(realpath tests) $(realpath tests/test_integration.py) -p no:warnings'"
 hardware-in-loop = "pytest -vv tests/test_hil.py"
-e2e = "pytest -vv -p no:xdist tests/test_dnp3_e2e.py"
 healthcheck = "bash -c 'ssh -o ConnectTimeout=10 -o BatchMode=yes ${PI_HOST:-pi@raspberrypi.local} echo NETWORK_READY'"
 test = ["unit", "healthcheck", "integration", "hardware-in-loop"]
 cover = "pytest -vv --cov --cov-branch --cov-report=term-missing src/"

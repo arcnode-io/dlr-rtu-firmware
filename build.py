@@ -14,12 +14,8 @@ import yaml
 from pydantic import BaseModel
 
 
-class LogLevel(str, enum.Enum):
-    """Logging levels for the application.
-
-    Reason: `str, Enum` instead of `StrEnum` because this repo targets
-    Python 3.10 (dnp3-python wheel constraint); StrEnum landed in 3.11.
-    """
+class LogLevel(enum.StrEnum):
+    """Logging levels for the application."""
 
     ERROR = "ERROR"
     WARN = "WARN"
@@ -27,8 +23,8 @@ class LogLevel(str, enum.Enum):
     DEBUG = "DEBUG"
 
 
-class Mode(str, enum.Enum):
-    """Top-level deployment mode — picks sensor drivers + endpoint config.
+class Mode(enum.StrEnum):
+    """Top-level deployment mode -- picks sensor drivers + endpoint config.
 
     local: dev machine, all sensors sim, no DNP3 master expected.
     ci:    CI runner, all sensors sim, integration tests target localhost.
