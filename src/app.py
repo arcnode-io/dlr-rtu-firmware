@@ -44,13 +44,24 @@ def compute_tick(suite: SensorSuite) -> tuple[float, float]:
     # Rain isn't in IEEE 738; read for situational awareness only (future MQTT).
     _rain = suite.rain.read()
 
+    # Wind=None (sensor void / cold / iced / offline) → fallback to natural
+    # convection only by passing V_w = 0. IEEE 738's q_c term collapses to
+    # the buoyancy-driven path → ampacity equals the conductor's static
+    # rating. Same conservative direction as the icing-fallback policy.
+    if wind is None:
+        wind_speed_mps = 0.0
+        wind_angle_deg = 90.0  # irrelevant at V_w = 0
+    else:
+        wind_speed_mps = wind.speed_mps
+        wind_angle_deg = wind.direction_deg
+
     line_rating_a = steady_state_current(
         conductor=DRAKE_ACSR_795,
         conductor_temp_c=conductor_temp_c,
         ambient_temp_c=dht.temperature_c,
-        wind_speed_mps=wind.speed_mps,
+        wind_speed_mps=wind_speed_mps,
         solar_irradiance_w_per_m2=solar_w_per_m2,
-        wind_angle_deg=wind.direction_deg,
+        wind_angle_deg=wind_angle_deg,
     )
     envelope = derive_envelope(
         line_rating_a=line_rating_a,

@@ -37,7 +37,10 @@ class _RainReader(Protocol):
 
 
 class _WindReader(Protocol):
-    def read(self) -> WindReading: ...
+    """Wind drivers may return None on invalid (cold / iced / void status /
+    timeout / bad checksum). Upstream collapses None → V_w = 0 fallback."""
+
+    def read(self) -> WindReading | None: ...
 
 
 @dataclass(frozen=True)
