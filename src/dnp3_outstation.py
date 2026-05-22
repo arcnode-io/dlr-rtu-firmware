@@ -13,6 +13,7 @@ DNP3 point layout matches `edp-api/device_templates/leaf/operating_envelope.yaml
 """
 
 import logging
+import ssl
 from typing import Final
 
 from dnp3_outstation import AsyncOutstation
@@ -43,6 +44,7 @@ class Dnp3Outstation:
         port: int = 20000,
         master_addr: int = 2,
         outstation_addr: int = 1,
+        ssl_context: ssl.SSLContext | None = None,
     ) -> None:
         """Configure the underlying outstation; not started yet.
 
@@ -51,12 +53,17 @@ class Dnp3Outstation:
             port: TCP port for the DNP3 master to connect to (default 20000).
             master_addr: DNP3 link-layer address of the master (gateway side).
             outstation_addr: DNP3 link-layer address of THIS outstation.
+            ssl_context: when set, enables DNP3-TLS mutual auth. Should be
+                Purpose.CLIENT_AUTH with verify_mode=CERT_REQUIRED +
+                load_verify_locations(ca_pem) so masters whose client cert
+                isn't signed by the trusted CA are rejected. None = plain TCP.
         """
         self._app = AsyncOutstation(
             host=outstation_ip,
             port=port,
             master_addr=master_addr,
             outstation_addr=outstation_addr,
+            ssl_context=ssl_context,
         )
 
     async def start(self) -> None:

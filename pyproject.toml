@@ -9,7 +9,7 @@ dependencies = [
     "pyserial>=3.5",
     "pyyaml>=6.0.0",
     "aiomqtt>=2.0.0",
-    "dnp3-outstation>=0.1.0",
+    "dnp3-outstation>=0.2.0",
 ]
 
 [dependency-groups]

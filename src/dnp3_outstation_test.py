@@ -47,6 +47,29 @@ def test_constructor_passes_addresses_to_async_outstation(app_mock: AppMock) -> 
         port=20001,
         master_addr=3,
         outstation_addr=7,
+        ssl_context=None,
+    )
+
+
+def test_constructor_forwards_ssl_context_for_mutual_tls(app_mock: AppMock) -> None:
+    """ssl_context kwarg reaches AsyncOutstation -> enables DNP3-TLS mutual auth."""
+    import ssl
+
+    cls_mock, _ = app_mock
+    ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+    Dnp3Outstation(
+        outstation_ip="127.0.0.1",
+        port=20001,
+        master_addr=3,
+        outstation_addr=7,
+        ssl_context=ctx,
+    )
+    cls_mock.assert_called_once_with(
+        host="127.0.0.1",
+        port=20001,
+        master_addr=3,
+        outstation_addr=7,
+        ssl_context=ctx,
     )
 
 
