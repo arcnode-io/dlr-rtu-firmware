@@ -48,7 +48,9 @@ class Config(BaseModel):
     # Master is `ems-industrial-gateway` (configured separately on the gateway side).
     # Bind to all interfaces by default — the gateway connects across the LAN.
     dnp3_outstation_ip: str = "0.0.0.0"  # noqa: S104
-    dnp3_outstation_port: int = 20000
+    # IEEE 1815-2012 mandates 19999 for DNP3 over TLS (vs 20000 plain TCP).
+    # Standardizing on 19999 now that south-side is mTLS-PKI.
+    dnp3_outstation_port: int = 19999
     dnp3_master_addr: int = 2
     dnp3_outstation_addr: int = 1
     # POI line-to-line voltage (kV) used by DOE derivation to convert IEEE 738

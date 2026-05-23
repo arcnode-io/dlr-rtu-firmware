@@ -4,7 +4,7 @@ local:
   mqtt_host: "10.0.0.124"
   mode: local
   dnp3_outstation_ip: "0.0.0.0"
-  dnp3_outstation_port: 20000
+  dnp3_outstation_port: 19999
   dnp3_master_addr: 1
   dnp3_outstation_addr: 1024
   line_voltage_kv: 138.0
@@ -15,7 +15,7 @@ ci:
   mqtt_host: "10.3.4.168"
   mode: ci
   dnp3_outstation_ip: "0.0.0.0"
-  dnp3_outstation_port: 20000
+  dnp3_outstation_port: 19999
   dnp3_master_addr: 1
   dnp3_outstation_addr: 1024
   line_voltage_kv: 138.0
@@ -26,7 +26,7 @@ demo:
   mqtt_host: "10.0.0.124"
   mode: demo
   dnp3_outstation_ip: "0.0.0.0"
-  dnp3_outstation_port: 20000
+  dnp3_outstation_port: 19999
   dnp3_master_addr: 1
   dnp3_outstation_addr: 1024
   line_voltage_kv: 138.0

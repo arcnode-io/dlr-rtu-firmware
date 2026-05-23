@@ -41,7 +41,7 @@ class Dnp3Outstation:
         self,
         *,
         outstation_ip: str = "0.0.0.0",  # noqa: S104  # nosec B104
-        port: int = 20000,
+        port: int = 19999,
         master_addr: int = 2,
         outstation_addr: int = 1,
         ssl_context: ssl.SSLContext | None = None,
@@ -50,13 +50,16 @@ class Dnp3Outstation:
 
         Args:
             outstation_ip: bind address. "0.0.0.0" listens on all interfaces.
-            port: TCP port for the DNP3 master to connect to (default 20000).
+            port: TCP port for the DNP3 master to connect to. Default 19999
+                per IEEE 1815-2012 for DNP3 over TLS (20000 is plain DNP3).
             master_addr: DNP3 link-layer address of the master (gateway side).
             outstation_addr: DNP3 link-layer address of THIS outstation.
-            ssl_context: when set, enables DNP3-TLS mutual auth. Should be
-                Purpose.CLIENT_AUTH with verify_mode=CERT_REQUIRED +
-                load_verify_locations(ca_pem) so masters whose client cert
-                isn't signed by the trusted CA are rejected. None = plain TCP.
+            ssl_context: when set, enables DNP3-TLS mutual auth (PKI). Build
+                with Purpose.CLIENT_AUTH + load_verify_locations(ca_bundle)
+                for the trust anchor, load_cert_chain(device_cert, key) for
+                our identity, and verify_mode=CERT_REQUIRED. The gateway must
+                present a cert chain that validates against ca_bundle, else
+                the handshake fails. None = plain TCP (legacy).
         """
         self._app = AsyncOutstation(
             host=outstation_ip,
