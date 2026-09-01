@@ -66,8 +66,11 @@ class DhtReal:
         import adafruit_dht  # type: ignore[import-not-found]
         import board  # type: ignore[import-not-found]
 
+        # Reason: use_pulseio=False forces the bit-bang read path. The default
+        # (pulseio/libgpiod pulse capture) does not work on the Pi 5's RP1 GPIO —
+        # every read returns "DHT sensor not found". Bit-bang via lgpio works.
         pin_attr = f"D{pin}"
-        self._device = adafruit_dht.DHT22(getattr(board, pin_attr))
+        self._device = adafruit_dht.DHT22(getattr(board, pin_attr), use_pulseio=False)
 
     def read(self) -> DhtReading:
         """Read the DHT22. May raise RuntimeError on transient bus errors."""
