@@ -1,10 +1,7 @@
 [project]
 name = "dlr-operating-envelope"
 version = "1.0.0-beta"
-# Reason: op-env code runs on the HIL Raspberry Pi under Pi OS Bookworm system
-# Python (3.11). Bounded <3.12 so the lock only resolves 3.11-compatible versions.
-# Bump to ">=3.13,<3.14" + rejoin the fleet once the Pi is reimaged to Pi OS Trixie.
-requires-python = ">=3.11,<3.12"
+requires-python = ">=3.13,<3.14"
 dependencies = [
     "adafruit-blinka>=8.0.0",
     "adafruit-circuitpython-dht>=3.7.0",
