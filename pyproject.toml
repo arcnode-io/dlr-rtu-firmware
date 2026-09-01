@@ -10,6 +10,9 @@ dependencies = [
     "pyyaml>=6.0.0",
     "aiomqtt>=2.0.0",
     "dnp3-outstation>=0.2.0",
+    # Reason: Blinka's GPIO backend on the Pi 5 (DHT22 on GPIO4). aarch64-only so
+    # dev/CI x86 skip it; the Pi builds it from sdist (needs swig — no cp313 wheel).
+    "lgpio>=0.2.2 ; sys_platform == 'linux' and platform_machine == 'aarch64'",
 ]
 
 [dependency-groups]
@@ -35,6 +38,8 @@ dev = [
 [tool.deptry.per_rule_ignores]
 # Reason: pytest is a dev-only import allowed in colocated `*_test.py` files under src/.
 DEP004 = ["pytest"]
+# Reason: lgpio is imported dynamically by adafruit-blinka (Pi 5 GPIO backend), never by our code.
+DEP002 = ["lgpio"]
 
 [tool.deptry.package_module_name_map]
 # Package-name → import-name overrides where they differ.

@@ -462,6 +462,7 @@ dependencies = [
     { name = "adafruit-circuitpython-dht" },
     { name = "aiomqtt" },
     { name = "dnp3-outstation" },
+    { name = "lgpio", marker = "platform_machine == 'aarch64' and sys_platform == 'linux'" },
     { name = "pydantic" },
     { name = "pyserial" },
     { name = "pyyaml" },
@@ -493,6 +494,7 @@ requires-dist = [
     { name = "adafruit-circuitpython-dht", specifier = ">=3.7.0" },
     { name = "aiomqtt", specifier = ">=2.0.0" },
     { name = "dnp3-outstation", specifier = ">=0.2.0" },
+    { name = "lgpio", marker = "platform_machine == 'aarch64' and sys_platform == 'linux'", specifier = ">=0.2.2" },
     { name = "pydantic", specifier = ">=2.0.0" },
     { name = "pyserial", specifier = ">=3.5" },
     { name = "pyyaml", specifier = ">=6.0.0" },
@@ -585,6 +587,12 @@ sdist = { url = "https://files.pythonhosted.org/packages/33/f6/227c48c5fe47fa178
 wheels = [
     { url = "https://files.pythonhosted.org/packages/5a/de/bbc12563bbf979618d17625a4e753ff7a078523e28d870d3626daa97261a/invoke-3.0.3-py3-none-any.whl", hash = "sha256:f11327165e5cbb89b2ad1d88d3292b5113332c43b8553b494da435d6ec6f5053", size = 160958, upload-time = "2026-04-07T15:17:46.875Z" },
 ]
+
+[[package]]
+name = "lgpio"
+version = "0.2.2.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/56/33/26ec2e8049eaa2f077bf23a12dc61ca559fbfa7bea0516bf263d657ae275/lgpio-0.2.2.0.tar.gz", hash = "sha256:11372e653b200f76a0b3ef8a23a0735c85ec678a9f8550b9893151ed0f863fff", size = 90087, upload-time = "2024-03-29T21:59:55.901Z" }
 
 [[package]]
 name = "license-expression"
