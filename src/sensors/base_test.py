@@ -2,7 +2,7 @@
 
 import pytest
 
-from src.sensors.base import SawtoothSim
+from src.sensors.base import ConstantSim, SawtoothSim
 
 
 def test_sawtooth_starts_at_min_by_default() -> None:
@@ -48,3 +48,11 @@ def test_sawtooth_rejects_non_positive_step() -> None:
         SawtoothSim(min_value=0.0, max_value=10.0, step=0.0)
     with pytest.raises(ValueError, match=r"step .* must be > 0"):
         SawtoothSim(min_value=0.0, max_value=10.0, step=-1.0)
+
+
+def test_constant_sim_returns_same_value_every_read() -> None:
+    """No sweep -- always the configured value, unlike SawtoothSim."""
+    const = ConstantSim(42.0)
+    assert const.read() == 42.0
+    assert const.read() == 42.0
+    assert const.read() == 42.0

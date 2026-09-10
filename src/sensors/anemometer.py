@@ -52,3 +52,19 @@ class WindSim:
             speed_mps=self._speed.read(),
             direction_deg=self._direction.read(),
         )
+
+
+class WindConstant:
+    """Fixed wind reading -- always the same speed + direction.
+
+    Reason: same as `ConstantSim` -- holds this input steady during a demo
+    where a different sensor is the live one.
+    """
+
+    def __init__(self, *, speed_mps: float, direction_deg: float) -> None:
+        """Configure with the fixed reading every read() returns."""
+        self._reading = WindReading(speed_mps=speed_mps, direction_deg=direction_deg)
+
+    def read(self) -> WindReading:
+        """Return the fixed reading -- never advances."""
+        return self._reading

@@ -1,6 +1,6 @@
 """WindSim unit tests."""
 
-from src.sensors.anemometer import WindSim
+from src.sensors.anemometer import WindConstant, WindSim
 
 
 def test_wind_sim_first_read_at_zero_wind_north() -> None:
@@ -34,3 +34,14 @@ def test_wind_sim_direction_stays_within_compass_range() -> None:
     directions = [r.direction_deg for r in readings]
     assert max(directions) < 360.0
     assert min(directions) >= 0.0
+
+
+def test_wind_constant_returns_same_reading_every_read() -> None:
+    """No sweep -- always the configured speed + direction."""
+    const = WindConstant(speed_mps=3.0, direction_deg=90.0)
+    first = const.read()
+    second = const.read()
+    assert first.speed_mps == 3.0
+    assert first.direction_deg == 90.0
+    assert second.speed_mps == 3.0
+    assert second.direction_deg == 90.0

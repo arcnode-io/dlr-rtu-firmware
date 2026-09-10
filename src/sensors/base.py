@@ -52,3 +52,22 @@ class SawtoothSim:
         if self._value > self._max:
             self._value = self._min
         return value
+
+
+class ConstantSim:
+    """Fixed-value driver -- always returns the same reading.
+
+    Reason: for a live demo where one sensor (e.g. DHT) is real hardware
+    being manipulated on camera, a sawtooth on every other IEEE 738 input
+    swamps the signal -- rating moves every tick regardless of what's being
+    demonstrated. Hold everything else steady so the real input is the only
+    thing moving.
+    """
+
+    def __init__(self, value: float) -> None:
+        """Configure with the fixed value every read() returns."""
+        self._value = value
+
+    def read(self) -> float:
+        """Return the fixed value -- never advances."""
+        return self._value
