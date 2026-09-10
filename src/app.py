@@ -15,6 +15,8 @@ import logging
 import os
 from typing import Final
 
+import aiomqtt
+
 from build import CONFIG
 from src.dnp3_outstation import STATUS_OK, Dnp3Outstation
 from src.doe import derive_envelope
@@ -81,27 +83,42 @@ async def run() -> None:
     )
     await outstation.start()
     try:
-        async with await get_mqtt_client() as mqtt_client:
-            while True:
-                line_rating_a, limit_w = compute_tick(suite)
+        # Reason: a broken MQTT connection (broker restart, network blip)
+        # otherwise crashes the whole process with an uncaught MqttError --
+        # the outstation and sensor suite stay up, only the MQTT leg
+        # reconnects. Matches the same fix on the dlr-pst-sim (ESP32) side.
+        while True:
+            try:
+                async with await get_mqtt_client() as mqtt_client:
+                    while True:
+                        line_rating_a, limit_w = compute_tick(suite)
 
-                outstation.publish_line_rating(dynamic_amps=line_rating_a)
-                outstation.publish_envelope(
-                    import_limit_w=limit_w,
-                    export_limit_w=limit_w,
-                )
-                outstation.publish_status(oe_status=STATUS_OK, lr_status=STATUS_OK)
+                        outstation.publish_line_rating(dynamic_amps=line_rating_a)
+                        outstation.publish_envelope(
+                            import_limit_w=limit_w,
+                            export_limit_w=limit_w,
+                        )
+                        outstation.publish_status(
+                            oe_status=STATUS_OK, lr_status=STATUS_OK
+                        )
 
-                # QoS 1 -- broker ACKs before publish() returns, so RUN_ONCE
-                # mode's immediate disconnect can't race the delivery to
-                # the subscriber.
-                await mqtt_client.publish(MQTT_TOPIC, payload=line_rating_a, qos=1)
-                _log.debug(
-                    "tick: line_rating=%.1fA limit=%.0fW", line_rating_a, limit_w
-                )
+                        # QoS 1 -- broker ACKs before publish() returns, so
+                        # RUN_ONCE mode's immediate disconnect can't race the
+                        # delivery to the subscriber.
+                        await mqtt_client.publish(
+                            MQTT_TOPIC, payload=line_rating_a, qos=1
+                        )
+                        _log.debug(
+                            "tick: line_rating=%.1fA limit=%.0fW",
+                            line_rating_a,
+                            limit_w,
+                        )
 
-                if RUN_ONCE:
-                    return
+                        if RUN_ONCE:
+                            return
+                        await asyncio.sleep(SYSTEM_RATE)
+            except aiomqtt.MqttError:
+                _log.warning("MQTT connection lost -- reconnecting in %ss", SYSTEM_RATE)
                 await asyncio.sleep(SYSTEM_RATE)
     finally:
         await outstation.shutdown()
