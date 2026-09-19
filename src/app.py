@@ -1,4 +1,4 @@
-"""Application loop for dlr-operating-envelope.
+"""Application loop for dlr-rtu-firmware.
 
 Each tick:
 1. Read all five sensors (DHT, conductor temp, solar, rain, anemometer).

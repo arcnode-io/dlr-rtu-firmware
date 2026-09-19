@@ -1,5 +1,5 @@
 """
-Build configuration for dlr-operating-envelope.
+Build configuration for dlr-rtu-firmware.
 
 Loads configuration from cfg.yml based on ENV environment variable and
 allows MQTT_PORT override from environment for dynamic test container ports.
@@ -38,7 +38,7 @@ class Mode(enum.StrEnum):
 
 
 class Config(BaseModel):
-    """Configuration for dlr-operating-envelope application."""
+    """Configuration for dlr-rtu-firmware application."""
 
     log_level: LogLevel
     mqtt_host: str

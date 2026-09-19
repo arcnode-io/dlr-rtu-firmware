@@ -1,7 +1,7 @@
-# DLR Operating Envelope 🌡️📈
+# DLR RTU Firmware 🌡️📈
 
-![](https://img.shields.io/gitlab/pipeline-status/arcnode-io/dlr-operating-envelope?branch=main&logo=gitlab)
-![](https://gitlab.com/arcnode-io/dlr-operating-envelope/badges/main/coverage.svg)
+![](https://img.shields.io/gitlab/pipeline-status/arcnode-io/dlr-rtu-firmware?branch=main&logo=gitlab)
+![](https://gitlab.com/arcnode-io/dlr-rtu-firmware/badges/main/coverage.svg)
 ![](https://img.shields.io/badge/ty_checked-gray?logo=astral)
 ![](https://img.shields.io/badge/3.13-gray?logo=python)
 ![](https://img.shields.io/badge/uv-gray?logo=uv)
@@ -46,36 +46,36 @@ Where:
 ## Context Deployment
 
 ```plantuml
-rectangle dlr_operating_envelope
+rectangle dlr_rtu_firmware
 
 cloud sensors
 queue mqtt_broker
-rectangle dlr_pst_sim
+rectangle dlr_tap_regulator_sim
 rectangle industrial_gateway
 
-dlr_operating_envelope -- sensors
-dlr_operating_envelope -- mqtt_broker: mqtt
-mqtt_broker -- dlr_pst_sim
-dlr_operating_envelope -- industrial_gateway: dnp3
+dlr_rtu_firmware -- sensors
+dlr_rtu_firmware -- mqtt_broker: mqtt
+mqtt_broker -- dlr_tap_regulator_sim
+dlr_rtu_firmware -- industrial_gateway: dnp3
 ```
 
 ## Context Sequence
 
 ```plantuml
 participant sensors
-participant dlr_operating_envelope
-participant dlr_pst_sim
+participant dlr_rtu_firmware
+participant dlr_tap_regulator_sim
 participant industrial_gateway
 
-sensors -> dlr_operating_envelope: environmental readings
-dlr_operating_envelope -> dlr_pst_sim: mqtt measurements
-industrial_gateway -> dlr_operating_envelope: poll dnp3 points
+sensors -> dlr_rtu_firmware: environmental readings
+dlr_rtu_firmware -> dlr_tap_regulator_sim: mqtt measurements
+industrial_gateway -> dlr_rtu_firmware: poll dnp3 points
 ```
 
 ## Deployment
 
 ```plantuml
-rectangle dlr_operating_envelope #line.dashed {
+rectangle dlr_rtu_firmware #line.dashed {
   rectangle thermal_camera
   rectangle temp_humidity_sensor
   rectangle uv_light_sensor
@@ -88,8 +88,8 @@ rectangle dlr_operating_envelope #line.dashed {
 queue mqtt_broker
 rectangle industrial_gateway
 
-dlr_operating_envelope -- mqtt_broker: mqtt
-dlr_operating_envelope -- industrial_gateway: dnp3
+dlr_rtu_firmware -- mqtt_broker: mqtt
+dlr_rtu_firmware -- industrial_gateway: dnp3
 ```
 
 ## Sequence

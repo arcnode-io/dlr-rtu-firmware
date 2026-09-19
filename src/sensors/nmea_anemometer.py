@@ -20,7 +20,7 @@ Parser is talker-agnostic per Q9 — we don't distinguish vendors in firmware;
 the bench provisioning step (Q12) homogenises wire output across both SKUs.
 
 Failure modes (Q10): every error class returns `None`. The upstream
-`dlr-operating-envelope/src/app.py` collapses None into `V_w = 0.0` (Q15) so
+`dlr-rtu-firmware/src/app.py` collapses None into `V_w = 0.0` (Q15) so
 the IEEE 738 layer falls back to natural-convection-only ampacity = static
 rating. Same conservative path used for the icing-fallback policy.
 """

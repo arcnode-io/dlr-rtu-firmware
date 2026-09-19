@@ -1,1 +1,1 @@
-"""Test package for dlr-operating-envelope."""
+"""Test package for dlr-rtu-firmware."""
