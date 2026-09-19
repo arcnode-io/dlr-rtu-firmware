@@ -31,7 +31,7 @@ dev = [
     "pytest-xdist>=3.8.0",
     "ruff>=0.8.4",
     "testcontainers>=4.0.0",
-    "ty>=0.0.18",
+    "ty==0.0.37",
     "types-paramiko>=4.0",
 ]
 
