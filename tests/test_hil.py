@@ -47,6 +47,10 @@ def test_hil_mqtt_integration() -> None:
         print(f"[{time.time() - start_time:.1f}s] {msg}")
 
     # Get Pi connection details from environment
+    # Reason: must match the ENV this process resolved CONFIG/MQTT_TOPIC from
+    # (build.py defaults the same way) -- otherwise the Pi publishes under a
+    # different cfg.yml section's site_id/device_id than we're subscribed to.
+    pi_env = os.environ.get("ENV", "local")
     pi_host = os.environ.get("PI_HOST", "pi@raspberrypi.local")
     pi_python = os.environ.get(
         "PI_PYTHON", "/home/pi/dlr-operating-envelope/.venv/bin/python"
@@ -168,6 +172,7 @@ def test_hil_mqtt_integration() -> None:
             cmd = (
                 f"cd /tmp/circuitpython-test && "
                 f"MQTT_HOST={host_ip} MQTT_PORT={broker_port} MODE=development "
+                f"ENV={pi_env} "
                 f"{pi_python} -m src.main"
             )
             log(f"CMD: {cmd}")
