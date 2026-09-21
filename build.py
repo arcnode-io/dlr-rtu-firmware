@@ -44,6 +44,10 @@ class Config(BaseModel):
     mqtt_host: str
     wifi_ssid: str
     mode: Mode = Mode.LOCAL
+    # Identity for the canonical MQTT topic (ADR-002 §9: snake_case slug,
+    # immutable post-provisioning). One physical unit per mode at MVP.
+    site_id: str
+    device_id: str
     # DNP3 outstation: where to listen + which DNP3 link-layer addresses to use.
     # Master is `ems-industrial-gateway` (configured separately on the gateway side).
     # Bind to all interfaces by default — the gateway connects across the LAN.

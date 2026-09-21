@@ -13,6 +13,7 @@ The mode env (local | ci | demo) decides which driver each sensor uses.
 import asyncio
 import logging
 import os
+from datetime import UTC, datetime
 from typing import Final
 
 import aiomqtt
@@ -21,8 +22,12 @@ from build import CONFIG
 from src.dnp3_outstation import STATUS_OK, Dnp3Outstation
 from src.doe import derive_envelope
 from src.ieee738 import DRAKE_ACSR_795, steady_state_current
-from src.mqtt import MQTT_TOPIC, get_mqtt_client
+from src.mqtt import FloatSample, dynamic_line_rating_topic, get_mqtt_client, to_rfc3339
 from src.sensor_suite import SensorSuite, build_sensor_suite
+
+# Canonical topic per ADR-002; fixed for the process lifetime (site/device
+# identity doesn't change at runtime).
+LINE_RATING_TOPIC: Final[str] = dynamic_line_rating_topic(CONFIG)
 
 # Tick rate seconds. DOE/line-rating physics is slow; 2s is plenty.
 SYSTEM_RATE: Final[int] = 2
@@ -102,11 +107,18 @@ async def run() -> None:
                             oe_status=STATUS_OK, lr_status=STATUS_OK
                         )
 
-                        # QoS 1 -- broker ACKs before publish() returns, so
-                        # RUN_ONCE mode's immediate disconnect can't race the
-                        # delivery to the subscriber.
+                        # QoS 0 / retain=true per ADR-002 §11 (measurements
+                        # family): new subscribers see the latest value
+                        # immediately, no delivery guarantee needed for
+                        # high-rate telemetry.
+                        sample = FloatSample(
+                            ts=to_rfc3339(datetime.now(UTC)), value=line_rating_a
+                        )
                         await mqtt_client.publish(
-                            MQTT_TOPIC, payload=line_rating_a, qos=1
+                            LINE_RATING_TOPIC,
+                            payload=sample.model_dump_json(),
+                            qos=0,
+                            retain=True,
                         )
                         _log.debug(
                             "tick: line_rating=%.1fA limit=%.0fW",

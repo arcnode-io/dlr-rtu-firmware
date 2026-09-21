@@ -2,14 +2,51 @@
 
 import logging
 import os
-from typing import Final
+from datetime import datetime
 
 import aiomqtt
+from pydantic import BaseModel
 
-from build import CONFIG
+from build import CONFIG, Config
 
-# MQTT topic for publishing IEEE 738 dynamic line rating (amps).
-MQTT_TOPIC: Final[str] = "test/line_rating/A"
+
+class FloatSample(BaseModel):
+    """ADR-002 §6 wire shape for a measurements-family float sample."""
+
+    ts: str
+    """RFC3339/ISO8601 timestamp with a literal Z suffix (ADR-002 §5)."""
+    value: float
+
+
+def to_rfc3339(dt: datetime) -> str:
+    """Format a UTC datetime as RFC3339 with a Z suffix (not +00:00).
+
+    Args:
+        dt: A timezone-aware UTC datetime.
+
+    Returns:
+        RFC3339 string, e.g. "2026-09-20T12:00:00Z".
+    """
+    return dt.isoformat(timespec="seconds").replace("+00:00", "Z")
+
+
+def dynamic_line_rating_topic(config: Config) -> str:
+    """Build the canonical measurements topic for IEEE 738 line rating.
+
+    Per ADR-002 §2 (6-segment measurements topic) and edp-api's
+    device_templates/leaf/line_rating.yaml (measurement=dynamic_line_rating,
+    unit=amps).
+
+    Args:
+        config: Full app config -- carries site_id/device_id.
+
+    Returns:
+        The topic string to publish dynamic line rating samples to.
+    """
+    return (
+        f"sites/{config.site_id}/devices/{config.device_id}"
+        "/measurements/dynamic_line_rating/amps"
+    )
 
 
 async def get_mqtt_client() -> aiomqtt.Client:

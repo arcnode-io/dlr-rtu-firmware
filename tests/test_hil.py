@@ -17,10 +17,15 @@ from pathlib import Path
 import paramiko
 import paho.mqtt.client as mqtt_client
 
+from build import CONFIG
+from src.mqtt import FloatSample, dynamic_line_rating_topic
 from tests.fixtures.containers import start_mqtt_broker
 
-# Topic where IEEE 738 line-rating readings are published.
-MQTT_TOPIC = "test/line_rating/A"
+# Canonical topic where IEEE 738 line-rating readings are published. Built
+# the same way the app builds it, from the same CONFIG (ENV unset -> "local"
+# section, same as the SSH-deployed run below) -- avoids a second hardcoded
+# copy drifting from the real topic.
+MQTT_TOPIC = dynamic_line_rating_topic(CONFIG)
 
 # Maximum time to wait for subscription confirmation (seconds)
 SUBSCRIBE_TIMEOUT = 10
@@ -208,7 +213,8 @@ def test_hil_mqtt_integration() -> None:
         # Loose bound: ~10 A floor catches dead/zero output; 5000 A ceiling
         # catches obviously-wrong scaling. The sim sensors at first-tick state
         # land somewhere in the low-hundreds for DRAKE_ACSR_795 conductor.
-        line_rating_a = float(received_messages[0])
+        sample = FloatSample.model_validate_json(received_messages[0])
+        line_rating_a = sample.value
         assert (
             10.0 <= line_rating_a <= 5000.0
         ), f"line rating {line_rating_a}A outside plausible range"
