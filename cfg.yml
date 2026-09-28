@@ -35,4 +35,4 @@ demo:
   dnp3_outstation_port: 19999
   dnp3_master_addr: 1
   dnp3_outstation_addr: 1024
-  line_voltage_kv: 138.0
+  line_voltage_kv: 13.8
