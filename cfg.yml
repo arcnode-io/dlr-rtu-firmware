@@ -29,7 +29,7 @@ demo:
   wifi_ssid: "LanSolo-2g"
   mqtt_host: "10.0.0.124"
   mode: demo
-  site_id: "demo-site"
+  site_id: "demo_site"
   device_id: "dlr_rtu_demo"
   dnp3_outstation_ip: "0.0.0.0"
   dnp3_outstation_port: 19999
