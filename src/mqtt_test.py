@@ -2,8 +2,15 @@
 
 from datetime import UTC, datetime
 
+import pytest
+
 from build import Config, LogLevel, Mode
-from src.mqtt import FloatSample, dynamic_line_rating_topic, to_rfc3339
+from src.mqtt import (
+    FloatSample,
+    dynamic_line_rating_topic,
+    mqtt_credentials,
+    to_rfc3339,
+)
 
 _TEST_CONFIG = Config(
     log_level=LogLevel.DEBUG,
@@ -32,3 +39,19 @@ def test_to_rfc3339_formats_with_z_suffix() -> None:
     """ADR-002 requires RFC3339 with a literal Z suffix, not +00:00."""
     dt = datetime(2026, 9, 20, 12, 0, 0, tzinfo=UTC)
     assert to_rfc3339(dt) == "2026-09-20T12:00:00Z"
+
+
+def test_mqtt_credentials_reads_env_vars(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Broker auth (demo/prod) comes from env vars, not cfg.yml."""
+    monkeypatch.setenv("MQTT_USERNAME", "dlr_rtu")
+    monkeypatch.setenv("MQTT_PASSWORD", "hunter2")
+    assert mqtt_credentials() == ("dlr_rtu", "hunter2")
+
+
+def test_mqtt_credentials_defaults_to_anonymous(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Local/CI brokers have no RBAC -- unset env vars mean anonymous connect."""
+    monkeypatch.delenv("MQTT_USERNAME", raising=False)
+    monkeypatch.delenv("MQTT_PASSWORD", raising=False)
+    assert mqtt_credentials() == (None, None)

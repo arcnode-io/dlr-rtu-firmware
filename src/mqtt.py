@@ -49,6 +49,19 @@ def dynamic_line_rating_topic(config: Config) -> str:
     )
 
 
+def mqtt_credentials() -> tuple[str | None, str | None]:
+    """Read broker auth from env vars, per template-secrets.env.
+
+    Local/CI brokers have no RBAC and stay anonymous by default. Demo/prod
+    brokers (File RBAC, no Allow-All) reject anonymous connects and need
+    these set at deploy time.
+
+    Returns:
+        (username, password) -- both None when unset (anonymous connect).
+    """
+    return os.environ.get("MQTT_USERNAME"), os.environ.get("MQTT_PASSWORD")
+
+
 async def get_mqtt_client() -> aiomqtt.Client:
     """
     Create MQTT client configured for broker connection.
@@ -67,9 +80,14 @@ async def get_mqtt_client() -> aiomqtt.Client:
     mqtt_port = int(os.environ.get("MQTT_PORT", "1883"))
     # Reason: MQTT_HOST override needed when broker runs on a different machine (e.g. dev machine during HIL tests)
     mqtt_host = os.environ.get("MQTT_HOST", CONFIG.mqtt_host)
+    username, password = mqtt_credentials()
 
     logging.info(f"Connecting to MQTT broker at {mqtt_host}:{mqtt_port}")
 
     return aiomqtt.Client(
-        hostname=mqtt_host, port=mqtt_port, identifier="circuitpython"
+        hostname=mqtt_host,
+        port=mqtt_port,
+        identifier="circuitpython",
+        username=username,
+        password=password,
     )
