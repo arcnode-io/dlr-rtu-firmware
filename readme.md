@@ -50,12 +50,12 @@ rectangle dlr_rtu_firmware
 
 cloud sensors
 queue mqtt_broker
-rectangle dlr_tap_regulator_sim
+rectangle dlr_line_loading_sim
 rectangle industrial_gateway
 
 dlr_rtu_firmware -- sensors
 dlr_rtu_firmware -- mqtt_broker: mqtt
-mqtt_broker -- dlr_tap_regulator_sim
+mqtt_broker -- dlr_line_loading_sim
 dlr_rtu_firmware -- industrial_gateway: dnp3
 ```
 
@@ -64,11 +64,11 @@ dlr_rtu_firmware -- industrial_gateway: dnp3
 ```plantuml
 participant sensors
 participant dlr_rtu_firmware
-participant dlr_tap_regulator_sim
+participant dlr_line_loading_sim
 participant industrial_gateway
 
 sensors -> dlr_rtu_firmware: environmental readings
-dlr_rtu_firmware -> dlr_tap_regulator_sim: mqtt measurements
+dlr_rtu_firmware -> dlr_line_loading_sim: mqtt measurements
 industrial_gateway -> dlr_rtu_firmware: poll dnp3 points
 ```
 
