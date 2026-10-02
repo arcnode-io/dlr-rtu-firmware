@@ -31,22 +31,20 @@ def to_rfc3339(dt: datetime) -> str:
 
 
 def dynamic_line_rating_topic(config: Config) -> str:
-    """Build the canonical measurements topic for IEEE 738 line rating.
+    """Build the utility-namespace topic for IEEE 738 line rating.
 
-    Per ADR-002 §2 (6-segment measurements topic) and edp-api's
-    device_templates/leaf/line_rating.yaml (measurement=dynamic_line_rating,
-    unit=amps).
+    The RTU is the utility's equipment on the utility's conductor, outside
+    the EMS (edp-api f19e44b dropped the line_rating device template on this
+    reasoning), so the topic carries no site_id. Contract with
+    mock-derms-dispatch-api's DlrRatingSubscriber (commit 1a98578).
 
     Args:
-        config: Full app config -- carries site_id/device_id.
+        config: Full app config -- carries device_id.
 
     Returns:
         The topic string to publish dynamic line rating samples to.
     """
-    return (
-        f"sites/{config.site_id}/devices/{config.device_id}"
-        "/measurements/dynamic_line_rating/amps"
-    )
+    return f"utility/dlr/{config.device_id}/dynamic_line_rating/amps"
 
 
 def mqtt_credentials() -> tuple[str | None, str | None]:

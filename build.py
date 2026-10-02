@@ -44,9 +44,9 @@ class Config(BaseModel):
     mqtt_host: str
     wifi_ssid: str
     mode: Mode = Mode.LOCAL
-    # Identity for the canonical MQTT topic (ADR-002 §9: snake_case slug,
-    # immutable post-provisioning). One physical unit per mode at MVP.
-    site_id: str
+    # Per-commissioning instance identifier for the utility/dlr/{device_id}/...
+    # MQTT topic (no site_id -- the RTU is utility equipment, outside the EMS,
+    # per edp-api f19e44b / mock-derms-dispatch-api 1a98578).
     device_id: str
     # DNP3 outstation: where to listen + which DNP3 link-layer addresses to use.
     # Master is `ems-industrial-gateway` (configured separately on the gateway side).

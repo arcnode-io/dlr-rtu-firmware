@@ -3,7 +3,6 @@ local:
   wifi_ssid: "LanSolo-2g"
   mqtt_host: "10.0.0.124"
   mode: local
-  site_id: "dev_site"
   device_id: "dlr_rtu_local"
   dnp3_outstation_ip: "0.0.0.0"
   dnp3_outstation_port: 19999
@@ -16,7 +15,6 @@ ci:
   wifi_ssid: "Acme Widget Company_IoT"
   mqtt_host: "10.3.4.168"
   mode: ci
-  site_id: "ci_site"
   device_id: "dlr_rtu_ci"
   dnp3_outstation_ip: "0.0.0.0"
   dnp3_outstation_port: 19999
@@ -29,7 +27,6 @@ demo:
   wifi_ssid: "LanSolo-2g"
   mqtt_host: "10.0.0.124"
   mode: demo
-  site_id: "demo_site"
   device_id: "dlr_rtu_demo"
   dnp3_outstation_ip: "0.0.0.0"
   dnp3_outstation_port: 19999

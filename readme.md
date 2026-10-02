@@ -111,14 +111,15 @@ industrial_gateway -> dnp3_outstation: poll Group 30 + Group 1
 
 ## MQTT Topics Published
 
-Per [ems/topic_structure_adr.md](../ems/topic_structure_adr.md). Payload is `FloatSample {ts, value}` unless noted.
+**Implemented:** `utility/dlr/{device_id}/dynamic_line_rating/amps` — `FloatSample {ts, value}`, retained, QoS 1. The RTU is the utility's equipment on the utility's conductor, outside the EMS (edp-api `f19e44b` dropped the `line_rating` device template on this reasoning), so the topic carries no `site_id` -- see [mock-derms-dispatch-api's `DlrRatingSubscriber`](https://gitlab.com/arcnode-io/mock-derms-dispatch-api/-/blob/main/src/main/java/io/arcnode/mockderms/dispatch/DlrRatingSubscriber.java) for the consuming side of this contract.
+
+**Target contract, not yet implemented** per [ems/topic_structure_adr.md](../ems/topic_structure_adr.md) (payload `FloatSample {ts, value}` unless noted) — these would be real EMS-namespace topics, unrelated to the utility-namespace one above:
 
 - `sites/{site_id}/devices/{device_id}/measurements/conductor_temp/celsius`
 - `sites/{site_id}/devices/{device_id}/measurements/ambient_temp/celsius`
 - `sites/{site_id}/devices/{device_id}/measurements/humidity/percent`
 - `sites/{site_id}/devices/{device_id}/measurements/solar_irradiance/watts_per_m2`
 - `sites/{site_id}/devices/{device_id}/measurements/rain/none` — `BooleanSample`
-- `sites/{site_id}/devices/{device_id}/measurements/dynamic_rating/amps` — derived per IEEE 738
 - `sites/{site_id}/devices/{device_id}/measurements/status/none` — `EnumSample`, LWT-backed
 
 ## Project Structure

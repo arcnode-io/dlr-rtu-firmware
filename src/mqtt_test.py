@@ -17,15 +17,14 @@ _TEST_CONFIG = Config(
     mqtt_host="10.0.0.1",
     wifi_ssid="test",
     mode=Mode.LOCAL,
-    site_id="test_site",
     device_id="test_rtu",
 )
 
 
-def test_dynamic_line_rating_topic_builds_canonical_path() -> None:
-    """Topic follows ADR-002's 6-segment measurements shape."""
+def test_dynamic_line_rating_topic_builds_utility_path() -> None:
+    """Topic carries no site_id -- the RTU is utility equipment, outside the EMS."""
     actual = dynamic_line_rating_topic(_TEST_CONFIG)
-    expected = "sites/test_site/devices/test_rtu/measurements/dynamic_line_rating/amps"
+    expected = "utility/dlr/test_rtu/dynamic_line_rating/amps"
     assert actual == expected
 
 

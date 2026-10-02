@@ -107,17 +107,18 @@ async def run() -> None:
                             oe_status=STATUS_OK, lr_status=STATUS_OK
                         )
 
-                        # QoS 0 / retain=true per ADR-002 §11 (measurements
-                        # family): new subscribers see the latest value
-                        # immediately, no delivery guarantee needed for
-                        # high-rate telemetry.
+                        # QoS 1 / retain=true: matches DlrRatingSubscriber's
+                        # subscribe QoS (mock-derms-dispatch-api 1a98578) --
+                        # effective delivery QoS is min(publish, subscribe),
+                        # so publishing below the subscriber's QoS 1 would
+                        # silently downgrade it to at-most-once.
                         sample = FloatSample(
                             ts=to_rfc3339(datetime.now(UTC)), value=line_rating_a
                         )
                         await mqtt_client.publish(
                             LINE_RATING_TOPIC,
                             payload=sample.model_dump_json(),
-                            qos=0,
+                            qos=1,
                             retain=True,
                         )
                         _log.debug(

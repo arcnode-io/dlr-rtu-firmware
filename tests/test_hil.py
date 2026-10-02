@@ -49,7 +49,7 @@ def test_hil_mqtt_integration() -> None:
     # Get Pi connection details from environment
     # Reason: must match the ENV this process resolved CONFIG/MQTT_TOPIC from
     # (build.py defaults the same way) -- otherwise the Pi publishes under a
-    # different cfg.yml section's site_id/device_id than we're subscribed to.
+    # different cfg.yml section's device_id than we're subscribed to.
     pi_env = os.environ.get("ENV", "local")
     pi_host = os.environ.get("PI_HOST", "pi@raspberrypi.local")
     pi_python = os.environ.get(
